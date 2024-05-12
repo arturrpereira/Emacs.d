@@ -1,4 +1,4 @@
-* Pacotes
+* Packages
 #+begin_src emacs-lisp
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -7,3 +7,10 @@
   (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
   (package-initialize)
 #+end_src 
+
+* Theme
+#+begin_src emacs-lisp
+  (use-package modus-themes
+    :ensure t)
+  (load-theme 'modus-vivendi t)
+#+end_src
