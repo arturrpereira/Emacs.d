@@ -24,31 +24,33 @@
 
 * Sanity settings
 #+begin_src emacs-lisp
-(setq inhibit-startup-message t) 
+  (setq inhibit-startup-message t) 
 
-(tool-bar-mode -1) 
+  (tool-bar-mode -1) 
 
-(menu-bar-mode -1) 
+  (menu-bar-mode -1) 
 
-(scroll-bar-mode -1) 
+  (scroll-bar-mode -1) 
 
-(global-visual-line-mode t) 
+  (global-visual-line-mode t) 
 
-(setq package-check-signature nil) 
+  (setq package-check-signature nil) 
 
-(prefer-coding-system 'utf-8)
-(setq-default buffer-file-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+  (setq-default buffer-file-coding-system 'utf-8)
 
-(setq make-backup-files nil)
+  (setq make-backup-files nil)
 
-(set-fringe-mode 0)
+  (set-fringe-mode 0)
 
-(setq org-confirm-babel-evaluate nil)
+  (setq org-confirm-babel-evaluate nil)
 
-(setq org-startup-indented t)
+  (setq org-startup-indented t)
 
-(custom-set-variables
- '(initial-frame-alist (quote ((fullscreen . maximized)))))
+  (custom-set-variables
+   '(initial-frame-alist (quote ((fullscreen . maximized)))))
+
+  (setq frame-resize-pixelwise t)
 #+end_src
 
 * Fonte
@@ -91,7 +93,7 @@
   :ensure t
   :config
   (evil-mode 1))
-(setq evil-auto-indent nil)
+;;(setq evil-auto-indent nil)
 
 (use-package evil-collection
   :ensure t
@@ -136,4 +138,97 @@
 (use-package savehist
   :init
   (savehist-mode))
+#+end_src
+
+* Doom themes
+#+begin_src emacs-lisp
+(use-package doom-themes
+  :ensure t
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-dracula t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+#+end_src
+
+* LSP
+#+begin_src emacs-lisp
+(use-package lsp-mode
+  :ensure t)
+#+end_src
+
+* Python
+#+begin_src emacs-lisp
+(use-package python-mode
+  :ensure t
+  :hook (python-mode . lsp-deferred))
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (setq python-indent-offset 4) ;; Define a indentação para 4 espaços
+            (setq python-indent-guess-indent-offset nil) ;; Desativa a adivinhação automática da indentação
+            (setq python-indent-guess-indent-offset-verbose nil))) ;; Desativa mensagens de adivinhação de indentação
+#+end_src
+
+* Company
+#+begin_src emacs-lisp
+  (use-package company
+    :ensure t
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+           ("<tab>" . company-complete-selection))
+          (:map lsp-mode-map
+           ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0)
+    :config
+    (setq python-indent-levels 4))
+
+  (use-package company-box
+    :ensure t
+    :hook (company-mode . company-box-mode))
+#+end_src 
+
+* Yasnippet
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :ensure t)
+
+  (require 'yasnippet)
+  (yas-global-mode 1)
+#+end_src
+
+* Eshell
+** Syntax Highlighting
+#+begin_src emacs-lisp
+  (use-package eshell-syntax-highlighting
+    :after eshell
+    :ensure t ;; Install if not already installed.
+    ;; Enable in all Eshell buffers.
+    :config
+    (eshell-syntax-highlighting-global-mode +1))
+#+end_src
+** Autosuggestions
+#+begin_src emacs-lisp
+  (use-package esh-autosuggest
+    :hook (eshell-mode . esh-autosuggest-mode)
+    ;; If you have use-package-hook-name-suffix set to nil, uncomment and use the
+    ;; line below instead:
+    ;; :hook (eshell-mode-hook . esh-autosuggest-mode)
+    :ensure t)
+
+  (add-hook 'eshell-mode-hook #'esh-autosuggest-mode)
+
 #+end_src
